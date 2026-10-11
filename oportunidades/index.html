@@ -163,6 +163,8 @@
   .selo.direto.pendente { background: rgba(37, 211, 102, 0.72); }
   .selo.pro { background: rgba(61, 61, 60, 0.85); }
   .selo.novo { background: var(--ambar); color: var(--marca); }
+  .fora-bairro { display: inline-block; font-size: 0.72rem; font-weight: 600; padding: 1px 7px; border-radius: 999px;
+    background: var(--marca-clara); color: var(--ambar-tinta); vertical-align: 1px; }
   .selo.oportunidade { background: #1f7a4d; color: #fff; }
 
   .corpo { padding: 14px 15px 15px; display: flex; flex-direction: column; gap: 7px; flex: 1; }
@@ -678,6 +680,12 @@
       const l = document.createElement("p");
       l.className = "local";
       l.textContent = local;
+      if (o.fora_do_bairro) {
+        const f = document.createElement("span");
+        f.className = "fora-bairro";
+        f.textContent = "outro bairro";
+        l.append(" ", f);
+      }
       corpo.append(l);
     }
 

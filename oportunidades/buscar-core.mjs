@@ -242,6 +242,7 @@ const PORTAIS = {
 /** Busca estruturada só de proprietário direto (VivaReal e Chaves na Mão). */
 const TIPO_GECKO = { Casa: ["house", "two_story_house", "condominium"], Apartamento: ["apartment", "penthouse", "kitnet", "flat"],
   Terreno: ["land"], Comercial: ["commercial_room", "commercial_point", "warehouse"] };
+const oumais = (n) => Array.from({ length: Math.max(1, 5 - Math.min(4, n)) }, (_, i) => Math.min(4, n) + i);
 function corpoDonoDireto(a, pagina) {
   const corpo = {
     city: a.cidade, state: a.uf || "SP",
@@ -250,6 +251,15 @@ function corpoDonoDireto(a, pagina) {
   };
   if (a.bairro) corpo.neighborhood = a.bairro.replace(/[,|]/g, " ").slice(0, 120);
   if (TIPO_GECKO[a.tipo]) corpo.propertyTypes = TIPO_GECKO[a.tipo];
+  // Filtros vão para o portal (a Gecko repassa: priceMin/priceMax/usableAreasMin/
+  // bedrooms/parkingSpots, conferido em 11/10/2026). Antes a página pedia a cidade
+  // inteira e filtrava depois: em São José dos Campos, de 29 donos só 2 cabiam
+  // no filtro. Mínimo de quartos/vagas vira a lista "N ou mais" (o portal vai até 4+).
+  if (a.precoMin > 0) corpo.priceMin = Math.round(a.precoMin);
+  if (a.precoMax > 0) corpo.priceMax = Math.round(a.precoMax);
+  if (a.areaMin > 0) corpo.areaMin = Math.round(a.areaMin);
+  if (a.quartosMin > 0) corpo.bedrooms = oumais(a.quartosMin);
+  if (a.vagasMin > 0) corpo.parkingSpots = oumais(a.vagasMin);
   return corpo;
 }
 
@@ -1001,7 +1011,7 @@ export async function buscarOpcoes({
   // Planos = uma chamada paga por item. Quais portais entram sai de
   // `portaisAtivos()` (env JAZZ_PORTAIS), então o custo é configurável sem
   // publicar de novo.
-  const planos = montarPlanos({ bairro, cidade, uf, finalidade, tipo, pg });
+  const planos = montarPlanos({ bairro, cidade, uf, finalidade, tipo, pg, precoMin, precoMax, areaMin, quartosMin, vagasMin });
 
   const bloqueio = podeChamar(planos.length);
   if (bloqueio) {
@@ -1164,7 +1174,9 @@ export async function buscarOpcoes({
   const escolhidos = profissionais
     ? comCotaDePessoaFisica(intercalarPorPortal(ordenados), ALVO)
     : intercalarPorPortal(donos).slice(0, ALVO);
-  const opcoes = escolhidos.map(({ bairroCasou: _fora, ...o }) => o);
+  // Quem pediu um bairro precisa saber quando o cartão é de outro (vem da
+  // página da cidade inteira que completa a lista).
+  const opcoes = escolhidos.map(({ bairroCasou, ...o }) => (bairroNorm && !bairroCasou ? { ...o, fora_do_bairro: true } : o));
 
   return {
     status: 200,
