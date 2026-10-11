@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Jazz Conecta — Hub</title>
+<meta name="description" content="Entrada única do Jazz Conecta: módulos por papel, BI, telas de TV, páginas públicas e ferramentas da Imobiliária Jazz." />
+<meta name="robots" content="noindex" />
+<meta name="theme-color" content="#f0a50b" />
+<link rel="icon" href="https://cdn.loftsites.com.br/images/b7665483-6249-4aa3-8d4a-638dbb9f5b58/128x128.webp" />
+<style>
+  :root {
+    --fundo: #f7f6f4; --carta: #fff; --borda: #e5e1db; --tinta: #161514; --suave: #6b6560;
+    --marca: #3d3d3c; --ambar: #f0a50b; --ambar-tinta: #6d4e05; --raio: 14px;
+    --sombra: 0 1px 2px rgba(30,28,24,.05), 0 8px 24px rgba(30,28,24,.07);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --fundo: #151413; --carta: #1f1e1c; --borda: #34312d; --tinta: #f2efe9; --suave: #a9a29a; --marca: #e8e4dc; --ambar-tinta: #f6c55a; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--fundo); color: var(--tinta);
+    font: 16px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; }
+  .envolve { max-width: 1120px; margin: 0 auto; padding: 0 16px; }
+  header { background: var(--ambar); }
+  header .envolve { display: flex; align-items: center; gap: 14px; min-height: 70px; flex-wrap: wrap; }
+  header img { height: 42px; display: block; }
+  header .nome { font-weight: 700; color: #2b2b2a; font-size: 1.1rem; letter-spacing: -.01em; }
+  header .entrar { margin-left: auto; background: #2b2b2a; color: #fff; text-decoration: none;
+    padding: 10px 18px; border-radius: 999px; font-weight: 600; font-size: .95rem; }
+  h1 { font-size: clamp(1.6rem, 4vw, 2.3rem); margin: 34px 0 6px; letter-spacing: -.02em; }
+  .sub { color: var(--suave); margin: 0 0 22px; max-width: 70ch; }
+  .busca { width: 100%; max-width: 420px; padding: 11px 14px; border-radius: 10px;
+    border: 1px solid var(--borda); background: var(--carta); color: var(--tinta); font-size: 1rem; }
+  section { margin: 30px 0; }
+  h2 { font-size: 1.05rem; margin: 0 0 4px; display: flex; gap: 8px; align-items: baseline; }
+  h2 small { color: var(--suave); font-weight: 400; font-size: .85rem; }
+  .grade { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; margin-top: 12px; }
+  a.cartao { display: block; background: var(--carta); border: 1px solid var(--borda); border-radius: var(--raio);
+    padding: 14px 16px; text-decoration: none; color: inherit; box-shadow: var(--sombra); transition: transform .12s, border-color .12s; }
+  a.cartao:hover { transform: translateY(-2px); border-color: var(--ambar); }
+  a.cartao b { display: block; font-size: .98rem; }
+  a.cartao span { display: block; color: var(--suave); font-size: .85rem; margin-top: 3px; }
+  a.cartao em { display: inline-block; margin-top: 8px; font-style: normal; font-size: .72rem; font-weight: 600;
+    color: var(--ambar-tinta); background: rgba(240,165,11,.15); padding: 2px 8px; border-radius: 999px; }
+  .vazio { color: var(--suave); display: none; }
+  footer { color: var(--suave); font-size: .85rem; padding: 30px 0 40px; border-top: 1px solid var(--borda); margin-top: 40px; }
+  footer code { font-size: .8rem; }
+</style>
+</head>
+<body>
+<header>
+  <div class="envolve">
+    <img src="https://cdn.loftsites.com.br/images/0f7a99ad-f08c-41be-96d6-bffda87c8df7/w460.webp" alt="Imobiliária Jazz" onerror="this.remove()" />
+    <span class="nome">Jazz Conecta · Hub</span>
+    <a class="entrar" id="entrar" href="#">Entrar no sistema</a>
+  </div>
+</header>
+
+<main class="envolve">
+  <h1>Tudo do Jazz Conecta num lugar só</h1>
+  <p class="sub">Cada cartão abre o módulo no sistema. Depois do login, o sistema leva cada pessoa para a tela do seu papel: gestão, captação, pré-vendas, mentoria ou corretor.</p>
+  <input class="busca" id="filtro" type="search" placeholder="Procurar módulo (ex.: agenda, BI, Vista)" aria-label="Procurar módulo" />
+  <p class="vazio" id="vazio">Nenhum módulo com esse nome.</p>
+  <div id="secoes"></div>
+</main>
+
+<footer class="envolve">
+  Código e deploy do sistema: <code>imobjazz-eng/jazz-lead-conecta</code>. Este Hub e a página de oportunidades: <code>imobjazz-eng/jazz-conecta</code>.
+  O feed XML dos portais é outro projeto (<code>imobjazz-eng/jazz-xml</code>) e não passa por aqui.
+</footer>
+
+<script>
+  // Endereço de produção do sistema (Cloudflare Workers). Se o domínio mudar, só esta linha muda.
+  const SISTEMA = "https://jazz-lead-conecta.pablo-jazzimob.workers.dev";
+
+  const SECOES = [
+    { titulo: "Entrada", nota: "login e visão geral", itens: [
+      ["/auth", "Login", "Entrar com e-mail e senha da Jazz"],
+      ["/hub", "Hub interno", "Atalhos do dia, avisos e números da operação"],
+      ["/fluxograma", "Fluxograma", "Como a solicitação anda entre os módulos"],
+      ["/ajuda", "Ajuda", "Perguntas frequentes e passo a passo"],
+    ]},
+    { titulo: "Gestão", nota: "papel Gestor", itens: [
+      ["/admin", "Painel da gestão", "Equipe, filas, alertas e configuração"],
+      ["/solicitacoes-abertas", "Solicitações abertas", "Tudo o que os corretores pediram e ainda está na busca"],
+      ["/admin/diretoria", "Diretoria", "Resumo executivo"],
+      ["/admin/reuniao", "Reunião", "Pauta e números para a reunião semanal"],
+      ["/admin/ranking", "Ranking", "Quem mais captou, agendou e vendeu"],
+      ["/admin/comissao", "Comissão", "Cálculo e conferência de comissões"],
+      ["/admin/engajamento", "Engajamento", "Uso do sistema por pessoa"],
+      ["/admin/daily/ritmo", "Daily · Ritmo", "Ritmo diário da equipe"],
+      ["/admin/daily/harmonia", "Daily · Harmonia", "Equilíbrio de carga entre captadores"],
+      ["/admin/apis", "Central de APIs", "CEP, CNPJ, telefone, e-mail, mapa e crédito imobiliário", "novo"],
+      ["/admin/portais", "Portais", "Publicação nos portais"],
+      ["/admin/duplicados", "Duplicados", "Imóveis e clientes repetidos"],
+      ["/admin/insights", "Insights", "Achados automáticos da operação"],
+      ["/admin/inteligencia", "Inteligência", "Análises com IA"],
+      ["/admin/auditoria", "Auditoria", "Quem fez o quê e quando"],
+      ["/admin/logs", "Logs", "Registro técnico"],
+      ["/admin/eventos", "Eventos", "Linha do tempo dos eventos do sistema"],
+      ["/admin/saude", "Saúde do sistema", "Rotinas, filas e integrações"],
+      ["/admin/saude-dados", "Saúde dos dados", "Campos faltando e inconsistências"],
+      ["/admin/importar-voip", "Importar VoIP", "Ligações do PABX"],
+      ["/admin/imoveis/importar-plancap", "Importar PlanCap", "Carga de imóveis da planilha"],
+    ]},
+    { titulo: "Captação", nota: "papel Captador", itens: [
+      ["/captador", "Tarefas do captador", "Fila do dia, ligações e WhatsApp"],
+      ["/captador/metas", "Metas", "Meta de captação e progresso"],
+      ["/captador/prospeccoes", "Prospecções", "Proprietários encontrados e contatos feitos"],
+      ["/captador/recortes", "Recortes", "Regiões e perfis de imóvel em foco"],
+      ["/dashboard", "Operacional", "Painel operacional da captação"],
+      ["/relatorio-match", "Relatório de match", "Imóveis que atendem as solicitações"],
+    ]},
+    { titulo: "Pré-vendas", nota: "papel Pré-Vendas (Traciona)", itens: [
+      ["/traciona", "Painel de pré-vendas", "Leads, SLA e agendamentos"],
+      ["/traciona/foco", "Modo Foco", "Um lead por vez, sem distração"],
+      ["/traciona/equipe", "Equipe", "Carga e resultado de cada pessoa"],
+    ]},
+    { titulo: "Corretor", nota: "papel Corretor", itens: [
+      ["/corretor", "Minhas solicitações", "Pedir captação e acompanhar o Fio de cada pedido"],
+      ["/corretor/clientes", "Meus clientes", "Carteira e histórico"],
+      ["/corretor/agenda", "Agenda", "Visitas marcadas e retorno de cada uma"],
+      ["/corretor/configuracoes/agenda", "Configurar agenda", "Horários disponíveis"],
+      ["/lancamentos", "Lançamentos", "Empreendimentos em lançamento"],
+      ["/meus-creditos", "Meus créditos", "Créditos e saldo"],
+    ]},
+    { titulo: "BI", nota: "indicadores", itens: [
+      ["/admin/bi", "BI · Início", "Todos os painéis"],
+      ["/admin/bi/tempo-real", "Tempo real", "O que está acontecendo agora"],
+      ["/admin/bi/operacional", "Operacional", "Volume e prazos"],
+      ["/admin/bi/captacao", "Captação", "Funil de captação"],
+      ["/admin/bi/ranking-captacao", "Ranking de captação", "Comparativo entre captadores"],
+      ["/admin/bi/vinculo-captacao", "Vínculo captação", "Captação ligada à solicitação"],
+      ["/admin/bi/funil-vendas", "Funil de vendas", "Do lead à venda"],
+      ["/admin/bi/corretores", "Corretores", "Resultado por corretor"],
+      ["/admin/bi/cruzamento", "Cruzamento", "Demanda x oferta"],
+      ["/admin/bi/saude-estoque", "Saúde do estoque", "Imóveis parados e sem foto"],
+      ["/admin/bi/qualidade-anuncio", "Qualidade do anúncio", "Nota dos anúncios"],
+      ["/admin/bi/preditivo", "Preditivo", "Projeções"],
+      ["/admin/bi/uso-hub", "Uso do Hub", "Acessos por módulo"],
+      ["/admin/bi/vista", "Vista", "Dados vindos do CRM Vista"],
+      ["/admin/bi/leao", "Leão", "Painel Leão"],
+      ["/admin/bi/interno", "Interno", "Indicadores internos"],
+    ]},
+    { titulo: "Integração Vista e Sonax", nota: "sincronização", itens: [
+      ["/admin/vista-sync", "Vista · Sincronização", "Importação do CRM Vista"],
+      ["/admin/vista-polling", "Vista · Polling", "Consulta periódica"],
+      ["/admin/vista-webhooks", "Vista · Webhooks", "Avisos em tempo real"],
+      ["/admin/vista-diagnostico", "Vista · Diagnóstico", "Testar a conexão"],
+      ["/admin/vista-guard", "Vista · Guarda", "Proteção contra sobrescrita"],
+      ["/admin/vista-backfill", "Vista · Backfill", "Recarregar histórico"],
+      ["/admin/pendentes-vista", "Vista · Pendentes", "O que falta sincronizar"],
+      ["/admin/auditoria-vista", "Vista · Auditoria", "Diferenças entre Vista e Conecta"],
+      ["/admin/sonax-sync", "Sonax", "Sincronização Sonax"],
+    ]},
+    { titulo: "Telas de TV", nota: "para a parede do escritório", itens: [
+      ["/tv", "TV", "Placar da equipe"],
+      ["/tv/bi", "TV · BI", "Indicadores em tela cheia"],
+      ["/tv-operacao", "TV · Operação", "Fila e SLA ao vivo"],
+    ]},
+    { titulo: "Páginas públicas", nota: "sem login", itens: [
+      ["oportunidades/", "Imóveis com telefone na tela", "Até 10 imóveis de proprietário com telefone, OLX e VivaReal", "novo", true],
+      ["/solicitar", "Solicitar imóvel", "Formulário público de pedido"],
+      ["/busca-imoveis", "Busca de imóveis", "Busca pública"],
+      ["/beta", "Site da Jazz (beta)", "Vitrine de imóveis"],
+      ["/beta/anuncie", "Anuncie seu imóvel", "Captação pelo site"],
+    ]},
+  ];
+
+  const url = (caminho, local) => local ? caminho : SISTEMA + caminho;
+  document.getElementById("entrar").href = url("/auth");
+
+  const raiz = document.getElementById("secoes");
+  for (const s of SECOES) {
+    const sec = document.createElement("section");
+    sec.innerHTML = `<h2>${s.titulo} <small>${s.nota}</small></h2><div class="grade"></div>`;
+    const grade = sec.querySelector(".grade");
+    for (const [caminho, nome, texto, selo, local] of s.itens) {
+      const a = document.createElement("a");
+      a.className = "cartao";
+      a.href = url(caminho, local);
+      if (!local) { a.target = "_blank"; a.rel = "noopener"; }
+      a.innerHTML = `<b></b><span></span>${selo ? `<em>${selo}</em>` : ""}`;
+      a.querySelector("b").textContent = nome;
+      a.querySelector("span").textContent = texto;
+      a.dataset.busca = `${nome} ${texto} ${s.titulo}`.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+      grade.appendChild(a);
+    }
+    raiz.appendChild(sec);
+  }
+
+  document.getElementById("filtro").addEventListener("input", (e) => {
+    const q = e.target.value.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").trim();
+    let algum = false;
+    for (const sec of raiz.children) {
+      let n = 0;
+      for (const a of sec.querySelectorAll("a.cartao")) {
+        const ok = !q || a.dataset.busca.includes(q);
+        a.style.display = ok ? "" : "none";
+        if (ok) n++;
+      }
+      sec.style.display = n ? "" : "none";
+      algum ||= n > 0;
+    }
+    document.getElementById("vazio").style.display = algum ? "none" : "block";
+  });
+</script>
+</body>
+</html>
