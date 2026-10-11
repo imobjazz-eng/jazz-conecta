@@ -1,0 +1,1023 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Imóveis com telefone na tela — Jazz Conecta</title>
+<meta name="description" content="Informe cidade, bairro e faixa de preço e receba até 10 imóveis de OLX e VivaReal, só de proprietário, com o telefone na tela quando o anunciante publicou o número. Sem cadastro e sem login." />
+<meta name="robots" content="index, follow" />
+<meta name="theme-color" content="#f0a50b" />
+<meta property="og:title" content="Imóveis com telefone na tela — Jazz Conecta" />
+<meta property="og:description" content="Até 10 imóveis de três portais, com telefone na tela e sem cadastro." />
+<meta property="og:locale" content="pt_BR" />
+<meta property="og:type" content="website" />
+<!-- Marca da Jazz, o mesmo arquivo que imobiliariajazz.com serve. -->
+<link rel="icon" href="https://cdn.loftsites.com.br/images/b7665483-6249-4aa3-8d4a-638dbb9f5b58/128x128.webp" />
+<link rel="preconnect" href="https://cdn.loftsites.com.br" crossorigin />
+<style>
+  :root {
+    --fundo: #f7f6f4;
+    --carta: #ffffff;
+    --borda: #e5e1db;
+    --tinta: #161514;
+    --suave: #6b6560;
+    /* Identidade da Imobiliária Jazz, lida do site oficial: grafite como cor
+       primária, âmbar no cabeçalho e no rodapé. O verde anterior não era da
+       marca — era invenção minha. */
+    --marca: #3d3d3c;
+    --marca-viva: #2b2b2a;
+    --marca-clara: #f6f0e2;
+    --ambar: #f0a50b;
+    --ambar-fundo: #d18f08;
+    --ambar-tinta: #6d4e05;
+    --zap: #1c8a4a;
+    --alerta: #9a3412;
+    --raio: 14px;
+    --sombra: 0 1px 2px rgba(30, 28, 24, 0.05), 0 8px 24px rgba(30, 28, 24, 0.07);
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--fundo);
+    color: var(--tinta);
+    font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  .envolve { max-width: 1120px; margin: 0 auto; padding: 0 20px; }
+
+  /* ---------- barra da marca ---------- */
+  /* Âmbar sobre grafite: é a ordem do site da Jazz, e quem já conhece a
+     imobiliária reconhece a página antes de ler qualquer palavra. */
+  .barra-marca { background: var(--ambar); }
+  .barra-marca .envolve { display: flex; align-items: center; gap: 14px; min-height: 74px; }
+  .logo { display: inline-flex; align-items: center; text-decoration: none; }
+  .logo img { height: 46px; width: auto; display: block; }
+  /* Se o CDN da Jazz sair do ar, o nome entra no lugar da imagem em vez de
+     deixar um ícone quebrado no topo da página. */
+  .logo .escrito { display: none; font-weight: 700; font-size: 1.15rem; color: var(--marca); letter-spacing: -0.02em; }
+  .logo.sem-imagem img { display: none; }
+  .logo.sem-imagem .escrito { display: block; }
+  .produto {
+    font-size: 0.82rem; font-weight: 640; color: var(--marca);
+    border-left: 1px solid rgba(61, 61, 60, 0.3); padding-left: 14px; letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  /* ---------- capa ---------- */
+  .capa-topo { background: var(--marca); color: #fff; padding: 6px 0 96px; }
+
+  h1 { font-size: clamp(1.85rem, 4.4vw, 3rem); line-height: 1.1; letter-spacing: -0.03em; margin: 34px 0 14px; max-width: 16ch; font-weight: 700; }
+  h1 em { font-style: normal; color: var(--ambar); }
+  .chamada { color: #d5d2ce; max-width: 56ch; margin: 0 0 22px; font-size: 1.03rem; }
+  .provas { display: flex; flex-wrap: wrap; gap: 8px; padding: 0; margin: 0 0 8px; list-style: none; }
+  .provas li {
+    font-size: 0.82rem; background: rgba(255, 255, 255, 0.1); color: #f2efeb;
+    border: 1px solid rgba(255, 255, 255, 0.18); border-radius: 999px; padding: 5px 12px;
+  }
+
+  /* ---------- painel de busca ---------- */
+  /* Sobe sobre a capa: a busca é o produto, então ela ocupa o centro óptico
+     da dobra em vez de ficar empurrada para baixo do texto. */
+  .painel { margin-top: -72px; position: relative; z-index: 1; }
+  form {
+    background: var(--carta); border: 1px solid var(--borda); border-radius: var(--raio);
+    padding: 20px; display: grid; gap: 14px; grid-template-columns: 1fr;
+    box-shadow: var(--sombra);
+  }
+  @media (min-width: 720px) {
+    form { grid-template-columns: repeat(12, 1fr); padding: 24px; gap: 16px; }
+    .campo { grid-column: span 4; }
+    .campo.curto { grid-column: span 2; }
+    .campo.largo { grid-column: span 6; }
+    .campo.meio { grid-column: span 3; }
+  }
+  .campo { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+  label { font-size: 0.8rem; font-weight: 620; color: var(--suave); }
+  input, select {
+    font: inherit; padding: 11px 12px; border: 1px solid var(--borda);
+    border-radius: 9px; background: #fff; color: var(--tinta); width: 100%;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  input:focus, select:focus {
+    outline: none; border-color: var(--marca);
+    box-shadow: 0 0 0 3px rgba(240, 165, 11, 0.3);
+  }
+  .prefixo { position: relative; }
+  .prefixo span { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--suave); font-size: 0.9rem; pointer-events: none; }
+  .prefixo input { padding-left: 36px; }
+
+  .avancado { grid-column: 1 / -1; border-top: 1px solid var(--borda); padding-top: 14px; }
+  .avancado summary {
+    cursor: pointer; font-size: 0.87rem; font-weight: 620; color: var(--marca);
+    list-style: none; display: inline-flex; align-items: center; gap: 6px; user-select: none;
+  }
+  .avancado summary::-webkit-details-marker { display: none; }
+  .avancado summary::after { content: "+"; font-weight: 700; }
+  .avancado[open] summary::after { content: "–"; }
+  .miolo-avancado { display: grid; gap: 14px; grid-template-columns: 1fr; margin-top: 14px; }
+  @media (min-width: 720px) { .miolo-avancado { grid-template-columns: repeat(12, 1fr); gap: 16px; } }
+
+  .linha-acao { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: center; gap: 14px; }
+  button {
+    font: inherit; font-weight: 650; cursor: pointer; border: 0; border-radius: 9px;
+    background: var(--marca); color: #fff; padding: 12px 24px;
+    transition: background 0.15s, transform 0.05s;
+  }
+  button:hover:not(:disabled) { background: var(--marca-viva); }
+  button:active:not(:disabled) { transform: translateY(1px); }
+  button:disabled { opacity: 0.62; cursor: progress; }
+  .dica-form { font-size: 0.83rem; color: var(--suave); }
+  .limpar { background: none; color: var(--suave); padding: 12px 4px; font-weight: 560; }
+  .limpar:hover:not(:disabled) { background: none; color: var(--tinta); text-decoration: underline; }
+
+  #estado { margin: 24px 0 0; color: var(--suave); }
+  #estado.ruim { color: var(--alerta); font-weight: 600; }
+
+  /* ---------- resultados ---------- */
+  .cabeca-res { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 10px; margin: 40px 0 0; }
+  .cabeca-res h2 { font-size: 1.3rem; margin: 0; letter-spacing: -0.02em; }
+  .nota { font-size: 0.87rem; color: var(--suave); }
+  .fontes { font-size: 0.79rem; color: var(--suave); margin: 8px 0 0; line-height: 1.5; }
+  .fontes b { font-weight: 640; color: var(--tinta); }
+
+  .grade { list-style: none; padding: 0; margin: 18px 0 0; display: grid; gap: 18px; grid-template-columns: repeat(auto-fill, minmax(272px, 1fr)); }
+  .carta {
+    background: var(--carta); border: 1px solid var(--borda); border-radius: var(--raio);
+    overflow: hidden; display: flex; flex-direction: column; height: 100%;
+    transition: box-shadow 0.18s, transform 0.18s;
+  }
+  .carta:hover { box-shadow: var(--sombra); transform: translateY(-2px); }
+  .moldura { position: relative; background: var(--marca-clara); }
+  .capa { aspect-ratio: 4 / 3; width: 100%; object-fit: cover; display: block; }
+  .capa-vazia { aspect-ratio: 4 / 3; display: grid; place-items: center; color: #b6a780; font-size: 0.8rem; }
+  .selos { position: absolute; top: 10px; left: 10px; right: 10px; display: flex; flex-wrap: wrap; gap: 6px; }
+  .selo {
+    font-size: 0.72rem; font-weight: 640; border-radius: 999px; padding: 4px 10px;
+    background: rgba(22, 21, 20, 0.72); color: #fff; backdrop-filter: blur(4px);
+  }
+  .selo.direto { background: var(--zap); }
+  /* Mesmo verde do proprietário, translúcido: é a mesma classe de anunciante,
+     com um passo a mais até o telefone. */
+  .selo.direto.pendente { background: rgba(37, 211, 102, 0.72); }
+  .selo.pro { background: rgba(61, 61, 60, 0.85); }
+  .selo.novo { background: var(--ambar); color: var(--marca); }
+  .selo.oportunidade { background: #1f7a4d; color: #fff; }
+
+  .corpo { padding: 14px 15px 15px; display: flex; flex-direction: column; gap: 7px; flex: 1; }
+  .titulo { font-weight: 620; line-height: 1.35; margin: 0; font-size: 0.96rem;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .linha-preco { display: flex; align-items: baseline; flex-wrap: wrap; gap: 8px; }
+  .preco { font-size: 1.22rem; font-weight: 700; margin: 0; letter-spacing: -0.02em; }
+  .m2 { font-size: 0.78rem; color: var(--suave); }
+  .local { font-size: 0.87rem; color: var(--suave); margin: 0; }
+  .fatos { display: flex; flex-wrap: wrap; gap: 6px; margin: 2px 0 0; padding: 0; list-style: none; }
+  .fatos li { font-size: 0.77rem; background: var(--marca-clara); color: var(--ambar-tinta); border-radius: 999px; padding: 3px 9px; }
+  .custos { font-size: 0.78rem; color: var(--suave); margin: 0; }
+
+  .acoes { margin-top: auto; display: flex; flex-direction: column; gap: 6px; padding-top: 10px; }
+  .quem { margin: 0; font-size: 0.83rem; color: var(--suave); }
+  .quem b { color: var(--tinta); font-weight: 640; }
+  /* O número na tela, legível, sem precisar abrir o anúncio nem passar o
+     mouse no botão. É o que a página promete no título. */
+  .numero {
+    margin: 0; font-size: 1.02rem; font-weight: 700; letter-spacing: -0.01em;
+    color: var(--marca); display: flex; align-items: center; gap: 7px;
+  }
+  .numero svg { width: 15px; height: 15px; fill: var(--zap); flex: none; }
+  .falar {
+    display: block; text-align: center; text-decoration: none;
+    background: var(--marca); color: #fff; font-weight: 640; font-size: 0.9rem;
+    padding: 10px 14px; border-radius: 9px;
+  }
+  .falar:hover { background: var(--marca-viva); }
+  .zap { background: var(--zap); }
+  .zap:hover { background: #167039; }
+  .secundario { display: flex; gap: 12px; justify-content: center; }
+  .ligar, .origem { text-decoration: none; font-size: 0.81rem; color: var(--suave); padding: 2px; }
+  .ligar { color: var(--marca); font-weight: 620; }
+  .ligar:hover, .origem:hover { text-decoration: underline; }
+
+  /* ---------- esqueleto de carregamento ---------- */
+  /* Cartas cinzas com brilho: quem espera vê a forma do que vem, em vez de
+     uma tela em branco que parece travada. */
+  .osso { background: var(--carta); border: 1px solid var(--borda); border-radius: var(--raio); overflow: hidden; }
+  .osso .barra { background: #eceae7; border-radius: 6px; }
+  .osso .foto { aspect-ratio: 4 / 3; background: #eceae7; }
+  .osso .linhas { padding: 15px; display: grid; gap: 9px; }
+  .osso .barra.g { height: 15px; width: 85%; }
+  .osso .barra.m { height: 20px; width: 55%; }
+  .osso .barra.p { height: 12px; width: 65%; }
+  .osso .barra.b { height: 38px; width: 100%; margin-top: 6px; }
+  .brilha { position: relative; overflow: hidden; }
+  .brilha::after {
+    content: ""; position: absolute; inset: 0; transform: translateX(-100%);
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.65), transparent);
+    animation: passa 1.3s infinite;
+  }
+  @keyframes passa { 100% { transform: translateX(100%); } }
+  @media (prefers-reduced-motion: reduce) {
+    .brilha::after { animation: none; }
+    .carta:hover { transform: none; }
+    html { scroll-behavior: auto; }
+  }
+
+  /* ---------- convite Jazz ---------- */
+  .convite {
+    margin: 32px 0 0; background: var(--marca-clara); border: 1px solid #e8dcc0;
+    border-radius: var(--raio); padding: 18px 20px;
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px;
+  }
+  .convite p { margin: 0; max-width: 58ch; font-size: 0.93rem; color: var(--ambar-tinta); }
+  .convite strong { display: block; font-size: 1rem; color: var(--marca); }
+  .convite a {
+    text-decoration: none; background: var(--zap); color: #fff; font-weight: 640;
+    font-size: 0.9rem; padding: 10px 18px; border-radius: 9px; white-space: nowrap;
+  }
+  .convite a:hover { background: #167039; }
+
+  /* ---------- como funciona ---------- */
+  .passos { list-style: none; padding: 0; margin: 48px 0 0; display: grid; gap: 18px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+  .passos li { border-top: 3px solid var(--ambar); padding-top: 12px; }
+  .passos b { display: block; font-size: 0.94rem; margin-bottom: 3px; }
+  .passos span { font-size: 0.87rem; color: var(--suave); }
+
+  footer { margin: 48px 0 40px; font-size: 0.8rem; color: var(--suave); border-top: 1px solid var(--borda); padding-top: 18px; }
+  footer p { margin: 0 0 6px; max-width: 78ch; }
+  .oculto { display: none !important; }
+</style>
+</head>
+<body>
+
+<div class="barra-marca">
+  <div class="envolve">
+    <a class="logo" id="logo" href="https://imobiliariajazz.com/" target="_blank" rel="noopener">
+      <img src="https://cdn.loftsites.com.br/images/0f7a99ad-f08c-41be-96d6-bffda87c8df7/w460.webp"
+           alt="Imobiliária Jazz" width="215" height="60" fetchpriority="high" />
+      <span class="escrito">Imobiliária Jazz</span>
+    </a>
+    <span class="produto">Conecta</span>
+  </div>
+</div>
+
+<div class="capa-topo">
+  <div class="envolve">
+    <h1>Imóveis com o <em>telefone na tela</em></h1>
+    <p class="chamada">
+      Diga o que você procura e receba na hora até 10 anúncios, com o telefone
+      na tela sempre que o anunciante tiver publicado o número. Só aparece quem anuncia o próprio imóvel.
+    </p>
+    <ul class="provas">
+      <li>Acesso com o código da Jazz</li>
+      <li>OLX e VivaReal</li>
+      <li>Só proprietário, sem imobiliária</li>
+      <li>Resultados diferentes a cada busca</li>
+    </ul>
+  </div>
+</div>
+
+<main class="envolve">
+  <div class="painel">
+    <form id="busca">
+      <div class="campo curto">
+        <label for="codigo">Código de acesso *</label>
+        <input id="codigo" name="codigo" placeholder="código da Jazz" autocomplete="off"
+               spellcheck="false" required />
+      </div>
+      <div class="campo">
+        <label for="cidade">Cidade *</label>
+        <input id="cidade" name="cidade" list="cidades" placeholder="ex: São José dos Campos"
+               autocomplete="address-level2" enterkeyhint="search" required />
+        <datalist id="cidades">
+          <option value="São José dos Campos"></option>
+          <option value="Taubaté"></option>
+          <option value="Jacareí"></option>
+          <option value="Caçapava"></option>
+          <option value="Pindamonhangaba"></option>
+          <option value="Guaratinguetá"></option>
+          <option value="Campos do Jordão"></option>
+          <option value="São Paulo"></option>
+          <option value="Campinas"></option>
+          <option value="Sorocaba"></option>
+          <option value="Santos"></option>
+          <option value="Ribeirão Preto"></option>
+        </datalist>
+      </div>
+      <div class="campo curto">
+        <label for="uf">Estado</label>
+        <select id="uf">
+          <option>SP</option><option>RJ</option><option>MG</option><option>ES</option>
+          <option>PR</option><option>SC</option><option>RS</option><option>BA</option>
+          <option>PE</option><option>CE</option><option>GO</option><option>DF</option>
+          <option>MT</option><option>MS</option><option>PA</option><option>AM</option>
+        </select>
+      </div>
+      <div class="campo meio">
+        <label for="bairro">Bairro (opcional)</label>
+        <input id="bairro" name="bairro" placeholder="ex: Jardim Aquarius" />
+      </div>
+      <div class="campo meio">
+        <label for="finalidade">Finalidade</label>
+        <select id="finalidade" name="finalidade">
+          <option>Venda</option>
+          <option>Locação</option>
+        </select>
+      </div>
+
+      <details class="avancado" id="avancado">
+        <summary>Refinar a busca</summary>
+        <div class="miolo-avancado">
+          <div class="campo meio">
+            <label for="tipo">Tipo de imóvel</label>
+            <select id="tipo" name="tipo">
+              <option value="">Todos</option>
+              <option>Casa</option>
+              <option>Apartamento</option>
+              <option>Terreno</option>
+              <option>Comercial</option>
+            </select>
+          </div>
+          <div class="campo meio">
+            <label for="preco_min">Preço mínimo</label>
+            <div class="prefixo"><span>R$</span>
+              <input id="preco_min" inputmode="numeric" placeholder="200.000" />
+            </div>
+          </div>
+          <div class="campo meio">
+            <label for="preco">Preço máximo</label>
+            <div class="prefixo"><span>R$</span>
+              <input id="preco" inputmode="numeric" placeholder="600.000" />
+            </div>
+          </div>
+          <div class="campo meio">
+            <label for="area_min">Área mínima (m²)</label>
+            <input id="area_min" inputmode="numeric" placeholder="60" />
+          </div>
+          <div class="campo meio">
+            <label for="quartos">Quartos (mínimo)</label>
+            <select id="quartos">
+              <option value="">Qualquer</option>
+              <option value="1">1+</option>
+              <option value="2">2+</option>
+              <option value="3">3+</option>
+              <option value="4">4+</option>
+            </select>
+          </div>
+          <div class="campo meio">
+            <label for="vagas">Vagas (mínimo)</label>
+            <select id="vagas">
+              <option value="">Qualquer</option>
+              <option value="1">1+</option>
+              <option value="2">2+</option>
+              <option value="3">3+</option>
+            </select>
+          </div>
+        </div>
+        <label class="dica-form" style="display:flex;gap:8px;align-items:center;margin-top:10px">
+          <input type="checkbox" id="profissionais"> Mostrar também imobiliárias e corretores (depois dos proprietários)
+        </label>
+      </details>
+
+      <div class="linha-acao">
+        <button id="enviar" type="submit">Buscar 10 opções</button>
+        <button id="limpar" type="button" class="limpar">Limpar filtros</button>
+        <span class="dica-form">Só a cidade é obrigatória. Buscar de novo traz outras opções.</span>
+      </div>
+    </form>
+  </div>
+
+  <p id="estado" class="oculto" role="status" aria-live="polite"></p>
+
+  <section id="resultado" class="oculto">
+    <div class="cabeca-res">
+      <h2 id="contagem"></h2>
+      <span class="nota" id="aviso"></span>
+    </div>
+    <p class="fontes" id="fontes"></p>
+    <ul class="grade" id="lista"></ul>
+    <aside class="convite oculto" id="convite">
+      <p>
+        <strong>Quer vender ou alugar o seu?</strong>
+        A Jazz Conecta anuncia o seu imóvel nos portais e cuida do atendimento para você.
+      </p>
+      <a id="convite-link" href="#" target="_blank" rel="noopener noreferrer">Falar com a Jazz</a>
+    </aside>
+  </section>
+
+  <ol class="passos">
+    <li><b>1. Diga onde</b><span>Cidade e, se quiser, bairro. O resto é opcional.</span></li>
+    <li><b>2. Buscamos nos portais</b><span>Consultamos OLX e VivaReal na hora, só anúncios de proprietário, e juntamos tudo numa lista só.</span></li>
+    <li><b>3. Você fala direto</b><span>Quando o anunciante publicou o telefone, o número e o WhatsApp aparecem no cartão, com o rótulo de quem atende.</span></li>
+  </ol>
+
+  <footer>
+    <p>
+      Os anúncios são publicados por terceiros na OLX e no
+      VivaReal. Mostramos o telefone apenas quando o próprio portal o marca
+      como público — é o número que o anunciante pediu para exibir, nunca um
+      número obtido de outra forma. O cartão diz se quem atende é o
+      proprietário, um corretor ou uma imobiliária.
+    </p>
+    <p>
+      <a href="https://imobiliariajazz.com/" target="_blank" rel="noopener">Imobiliária Jazz</a>
+      · preços e disponibilidade são responsabilidade de quem anunciou.
+    </p>
+  </footer>
+</main>
+
+<script src="config.js"></script>
+<script>
+  const AVISOS = {
+    gecko_nao_configurada: "A busca ao vivo está indisponível no momento.",
+    codigo_invalido: "Código de acesso inválido.",
+    limite_diario_do_visitante: "Você atingiu o limite de 10 consultas em 24 horas.",
+    muitas_buscas_agora: "Muitas buscas agora há pouco. Tente de novo em um minuto.",
+    orcamento_diario_esgotado: "O limite de buscas de hoje foi atingido.",
+    portal_indisponivel: "Os portais não responderam agora. Tente de novo em instantes.",
+    portal_instavel: "Um dos portais não respondeu agora — buscar de novo costuma trazer mais.",
+    nenhum_particular_no_filtro: "Achamos anúncios, mas nenhum bateu com esses filtros.",
+    so_profissionais: "Nesta busca só apareceram imobiliárias e corretores. Tente outro bairro, sem filtros, ou busque de novo.",
+  };
+
+  // Rodízio de páginas: o cliente conta quantas vezes a MESMA busca foi feita
+  // e pede a página seguinte, para que voltar não traga os mesmos anúncios.
+  // A contagem tem de morar aqui, não no servidor: cada requisição serverless
+  // pode cair num isolate novo, e um contador de módulo nasceria zerado toda
+  // vez, pedindo sempre a primeira página.
+  const buscasFeitas = new Map();
+  function proximaPagina(assinatura) {
+    const n = (buscasFeitas.get(assinatura) ?? 0) + 1;
+    buscasFeitas.set(assinatura, n);
+    return n;
+  }
+
+  // A logo vem do CDN da Jazz. Se ele falhar, o nome escrito assume o lugar
+  // — melhor que um ícone quebrado no topo.
+  const imgLogo = document.querySelector("#logo img");
+  imgLogo.addEventListener("error", () => document.getElementById("logo").classList.add("sem-imagem"));
+
+  const form = document.getElementById("busca");
+  const botao = document.getElementById("enviar");
+  const estado = document.getElementById("estado");
+  const secao = document.getElementById("resultado");
+  const lista = document.getElementById("lista");
+  const contagem = document.getElementById("contagem");
+  const aviso = document.getElementById("aviso");
+  const fontes = document.getElementById("fontes");
+  const convite = document.getElementById("convite");
+  const conviteLink = document.getElementById("convite-link");
+
+  const CAMPOS_TEXTO = ["cidade", "bairro", "preco_min", "preco", "area_min"];
+  const GUARDA_CODIGO = "jazz.codigo";
+  const CAMPOS_LISTA = ["uf", "finalidade", "tipo", "quartos", "vagas"];
+  const el = (id) => document.getElementById(id);
+
+  function formataTelefone(d) {
+    if (d.length === 11) return `(${d.slice(0, 2)}) ${d.slice(2, 7)}-${d.slice(7)}`;
+    if (d.length === 10) return `(${d.slice(0, 2)}) ${d.slice(2, 6)}-${d.slice(6)}`;
+    return d;
+  }
+
+  function moeda(v, texto) {
+    if (texto) return texto;
+    if (v == null) return "Preço sob consulta";
+    return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
+  }
+
+  const milhar = (n) => n.toLocaleString("pt-BR");
+
+  // Máscara de milhar enquanto digita: no Brasil ninguém lê "600000" de
+  // primeira, e o servidor recebe só os dígitos de qualquer jeito.
+  function aplicaMascara(campo) {
+    campo.addEventListener("input", () => {
+      const digitos = campo.value.replace(/\D/g, "");
+      campo.value = digitos ? milhar(Number(digitos)) : "";
+    });
+  }
+  aplicaMascara(el("preco_min"));
+  aplicaMascara(el("preco"));
+
+  // "há 3 dias" diz mais do que uma data: anúncio novo de proprietário é o
+  // que ainda não foi garimpado por corretor.
+  function quandoSaiu(iso) {
+    if (!iso) return null;
+    const t = Date.parse(iso);
+    if (Number.isNaN(t)) return null;
+    const dias = Math.floor((Date.now() - t) / 86400000);
+    if (dias < 0) return null;
+    if (dias === 0) return "hoje";
+    if (dias === 1) return "ontem";
+    if (dias < 30) return `há ${dias} dias`;
+    const meses = Math.round(dias / 30);
+    return meses <= 1 ? "há 1 mês" : `há ${meses} meses`;
+  }
+
+  function ehRecente(iso) {
+    const t = Date.parse(iso ?? "");
+    return !Number.isNaN(t) && Date.now() - t < 3 * 86400000;
+  }
+
+  function mostraEstado(msg, ruim) {
+    estado.textContent = msg;
+    estado.classList.toggle("ruim", !!ruim);
+    estado.classList.toggle("oculto", !msg);
+  }
+
+  function esqueleto() {
+    const li = document.createElement("li");
+    li.className = "osso";
+    li.setAttribute("aria-hidden", "true");
+    li.innerHTML =
+      '<div class="foto brilha"></div><div class="linhas">' +
+      '<div class="barra g brilha"></div><div class="barra m brilha"></div>' +
+      '<div class="barra p brilha"></div><div class="barra b brilha"></div></div>';
+    return li;
+  }
+
+  // Mostra o que cada portal rendeu. Sem isto, uma lista só com anúncios da
+  // OLX parece que o outro portal nem foi consultado — quando na verdade ele
+  // respondeu e nenhum anúncio era de proprietário com telefone público.
+  function resumoFontes(lista) {
+    if (!Array.isArray(lista) || !lista.length) return "";
+    const partes = lista.map((f) => {
+      if (!f.respondeu) return `<b>${f.portal}</b>: não respondeu agora`;
+      if (!f.anuncios) return `<b>${f.portal}</b>: nenhum anúncio nessa busca`;
+      const fim = f.com_telefone
+        ? `${f.com_telefone} com telefone`
+        : "nenhum com telefone público";
+      // QUANTOS DESSE PORTAL CHEGARAM À PÁGINA.
+      //
+      // Sem este número, o portal que leu cinquenta anúncios e entregou ZERO
+      // fica idêntico ao que entregou cinco: a linha dizia "50 anúncios lidos"
+      // e o visitante concluía, com razão, que os cinquenta foram
+      // considerados. Foi exatamente o que aconteceu na busca de 14/09 — dez
+      // cartões, todos de imobiliária, com a OLX (que é onde está o
+      // particular) anunciando "50 anúncios lidos" e não colocando nenhum na
+      // tela. O silêncio estava no lugar errado: o dado existia no JSON
+      // (`exibidos`) e a página não mostrava.
+      //
+      // `0 na página` é a informação mais útil da linha, porque é a única que
+      // separa "o portal não tinha nada disso" de "o portal tinha e algo o
+      // derrubou aqui dentro".
+      const naPagina = typeof f.exibidos === "number"
+        ? `, ${f.exibidos === 0 ? "nenhum" : f.exibidos} na página`
+        : "";
+      return `<b>${f.portal}</b>: ${f.anuncios} anúncios lidos, ${fim}${naPagina}`;
+    });
+    return partes.join(" &middot; ");
+  }
+
+  function pill(texto) {
+    const li = document.createElement("li");
+    li.textContent = texto;
+    return li;
+  }
+
+  function cartao(o) {
+    const li = document.createElement("li");
+    li.className = "carta";
+
+    const moldura = document.createElement("div");
+    moldura.className = "moldura";
+
+    if (o.foto) {
+      const img = document.createElement("img");
+      img.className = "capa";
+      img.src = o.foto;
+      img.alt = "";
+      img.loading = "lazy";
+      img.decoding = "async";
+      img.referrerPolicy = "no-referrer";
+      // Foto de terceiro pode sumir a qualquer momento; sem isso a carta
+      // ficaria com um ícone de imagem quebrada.
+      img.onerror = () => {
+        img.remove();
+        moldura.prepend(Object.assign(document.createElement("div"), {
+          className: "capa-vazia", textContent: "sem foto",
+        }));
+      };
+      moldura.append(img);
+    } else {
+      moldura.append(Object.assign(document.createElement("div"), {
+        className: "capa-vazia", textContent: "sem foto",
+      }));
+    }
+
+    const selos = document.createElement("div");
+    selos.className = "selos";
+    // Quem atende do outro lado é a informação que decide se vale ligar.
+    const marca = document.createElement("span");
+    if (o.quem === "Proprietário") {
+      // Proprietário sem telefone continua sendo proprietário: é metade da
+      // página por regra do servidor, e mostrar só o nome do portal escondia
+      // justamente o que o visitante veio procurar.
+      //
+      // O RÓTULO PRECISA DIZER A VERDADE SOBRE O CONTATO, e até 14/09 ele não
+      // dizia: era "fone no anúncio" para qualquer proprietário sem telefone,
+      // inclusive os da OLX. Conferido abrindo um anúncio real (`Casa
+      // Condomínio residence club`, R$ 850.000): a página da OLX tem só o
+      // botão de Chat, telefone nenhum. O núcleo já sabia disso — "a OLX não
+      // expõe contato; medido, não suposto" — e a tela prometia o contrário.
+      //
+      // Custo do erro: o captador abre cinco anúncios procurando um número
+      // que não existe e conclui que a ferramenta mente. Pior que não mostrar.
+      marca.className = o.telefone ? "selo direto" : "selo direto pendente";
+      marca.textContent = o.telefone ? "Proprietário"
+        : o.portal === "OLX" ? "Proprietário · só chat na OLX"
+        : "Proprietário · contato no anúncio";
+    } else if (o.telefone) {
+      marca.className = "selo pro";
+      marca.textContent = o.quem ?? "Anunciante";
+    } else {
+      marca.className = "selo";
+      marca.textContent = o.portal;
+    }
+    selos.append(marca);
+    if (ehRecente(o.publicado_em)) {
+      const novo = document.createElement("span");
+      novo.className = "selo novo";
+      novo.textContent = "Novo";
+      selos.append(novo);
+    }
+    // Abaixo do mercado: sinal de dono apressado. Vem do servidor (preço/m²
+    // abaixo da mediana do resultado), calculado uma vez para todos.
+    if (o.abaixo_mercado) {
+      const op = document.createElement("span");
+      op.className = "selo oportunidade";
+      op.textContent = "Abaixo do mercado";
+      selos.append(op);
+    }
+    moldura.append(selos);
+    li.append(moldura);
+
+    const corpo = document.createElement("div");
+    corpo.className = "corpo";
+
+    const linhaPreco = document.createElement("div");
+    linhaPreco.className = "linha-preco";
+    const p = document.createElement("p");
+    p.className = "preco";
+    p.textContent = moeda(o.preco, o.preco_texto);
+    linhaPreco.append(p);
+    if (o.preco_m2) {
+      const m2 = document.createElement("span");
+      m2.className = "m2";
+      m2.textContent = `R$ ${milhar(o.preco_m2)}/m²`;
+      linhaPreco.append(m2);
+    }
+    corpo.append(linhaPreco);
+
+    const t = document.createElement("h3");
+    t.className = "titulo";
+    t.textContent = o.titulo;
+    corpo.append(t);
+
+    const local = [o.bairro, o.cidade, o.uf].filter(Boolean).join(", ");
+    if (local) {
+      const l = document.createElement("p");
+      l.className = "local";
+      l.textContent = local;
+      corpo.append(l);
+    }
+
+    const fatos = [];
+    if (o.categoria) fatos.push(o.categoria);
+    if (o.quartos) fatos.push(o.quartos + (o.quartos === 1 ? " quarto" : " quartos"));
+    if (o.banheiros) fatos.push(o.banheiros + (o.banheiros === 1 ? " banheiro" : " banheiros"));
+    if (o.vagas) fatos.push(o.vagas + (o.vagas === 1 ? " vaga" : " vagas"));
+    if (o.area_m2) fatos.push(`${milhar(o.area_m2)} m²`);
+    if (fatos.length) {
+      const ul = document.createElement("ul");
+      ul.className = "fatos";
+      for (const f of fatos) ul.append(pill(f));
+      corpo.append(ul);
+    }
+
+    // Condomínio e IPTU mudam a conta do fim do mês; quando o portal informa,
+    // vale mostrar junto do preço em vez de esconder no anúncio.
+    const custos = [];
+    if (o.condominio) custos.push(`Condomínio R$ ${milhar(o.condominio)}`);
+    if (o.iptu) custos.push(`IPTU R$ ${milhar(o.iptu)}`);
+    const idade = quandoSaiu(o.publicado_em);
+    if (idade) custos.push(`Anunciado ${idade}`);
+    if (custos.length) {
+      const c = document.createElement("p");
+      c.className = "custos";
+      c.textContent = custos.join(" · ");
+      corpo.append(c);
+    }
+
+    const acoes = document.createElement("div");
+    acoes.className = "acoes";
+
+    if (o.telefone) {
+      // O número só chega aqui quando o portal marcou o telefone como
+      // público. A conferência é do servidor; a página só exibe.
+      if (o.anunciante || o.quem) {
+        const quem = document.createElement("p");
+        quem.className = "quem";
+        const rotulo = o.quem ? `<b>${o.quem}</b>` : "";
+        const nome = o.anunciante ? ` · ${o.anunciante}` : "";
+        quem.innerHTML = rotulo + nome;
+        acoes.append(quem);
+      }
+
+      // O número escrito, antes do botão: dá para anotar ou ligar do fixo.
+      const num = document.createElement("p");
+      num.className = "numero";
+      num.innerHTML =
+        '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 10.8a15 15 0 006.6 6.6l2.2-2.2a1 1 0 011-.24 11 11 0 003.5.56 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1 11 11 0 00.56 3.5 1 1 0 01-.25 1z"/></svg>';
+      num.append(document.createTextNode(formataTelefone(o.telefone)));
+      acoes.append(num);
+
+      // Mensagem configurável pela Jazz (dados.wpp_template), com placeholders
+      // {titulo}/{bairro}/{cidade}. Sem template, o texto padrão de comprador.
+      const modelo = (window.__wppTemplate || "").trim()
+        || 'Olá! Vi seu anúncio "{titulo}" e gostaria de mais informações.';
+      const texto = encodeURIComponent(
+        modelo.replace(/\{titulo\}/g, o.titulo ?? "")
+              .replace(/\{bairro\}/g, o.bairro ?? "")
+              .replace(/\{cidade\}/g, o.cidade ?? ""),
+      );
+      const zap = document.createElement("a");
+      zap.className = "falar zap";
+      zap.href = `https://wa.me/55${o.telefone}?text=${texto}`;
+      zap.target = "_blank";
+      zap.rel = "noopener noreferrer";
+      zap.textContent = `WhatsApp ${formataTelefone(o.telefone)}`;
+      acoes.append(zap);
+    } else {
+      // A OLX não expõe contato por API (phoneHashes vem vazio); o chat dela
+      // é o caminho real, e fica no próprio anúncio.
+      const a = document.createElement("a");
+      a.className = "falar";
+      a.href = o.url;
+      a.target = "_blank";
+      a.rel = "noopener noreferrer nofollow";
+      a.textContent = "Falar com o proprietário";
+      acoes.append(a);
+    }
+
+    const secundario = document.createElement("div");
+    secundario.className = "secundario";
+    if (o.telefone) {
+      const tel = document.createElement("a");
+      tel.className = "ligar";
+      tel.href = `tel:+55${o.telefone}`;
+      tel.textContent = "Ligar";
+      secundario.append(tel);
+    }
+    const origem = document.createElement("a");
+    origem.className = "origem";
+    origem.href = o.url;
+    origem.target = "_blank";
+    origem.rel = "noopener noreferrer nofollow";
+    origem.textContent = `Ver no ${o.portal}`;
+    secundario.append(origem);
+    acoes.append(secundario);
+
+    corpo.append(acoes);
+    li.append(corpo);
+    return li;
+  }
+
+  // Estado na URL: a busca vira um link que dá para mandar no WhatsApp e
+  // sobrevive a um F5 — comportamento que todo portal brasileiro tem.
+  function guardaNaUrl(q) {
+    const limpa = new URLSearchParams(q);
+    limpa.delete("pagina");
+    // O código fica fora do link: quem recebe a busca pronta usa o código
+    // dele, e um link com o código dentro vaza o acesso em qualquer print.
+    limpa.delete("codigo");
+    history.replaceState(null, "", limpa.toString() ? "?" + limpa.toString() : location.pathname);
+  }
+
+  function leDaUrl() {
+    const q = new URLSearchParams(location.search);
+    if (!q.get("cidade")) return false;
+    el("cidade").value = q.get("cidade");
+    el("bairro").value = q.get("bairro") ?? "";
+    for (const [chave, id] of [["preco_min", "preco_min"], ["preco_max", "preco"], ["area_min", "area_min"]]) {
+      const v = (q.get(chave) ?? "").replace(/\D/g, "");
+      el(id).value = v ? milhar(Number(v)) : "";
+    }
+    for (const id of CAMPOS_LISTA) {
+      const v = q.get(id);
+      if (v) el(id).value = v;
+    }
+    if (["tipo", "quartos", "vagas", "preco_min", "preco_max", "area_min"].some((c) => q.get(c))) {
+      el("avancado").open = true;
+    }
+    return true;
+  }
+
+  function montaConsulta() {
+    const cidade = el("cidade").value.trim();
+    const q = new URLSearchParams({ cidade, finalidade: el("finalidade").value });
+    const bairro = el("bairro").value.trim();
+    if (bairro) q.set("bairro", bairro);
+
+    // Cada filtro só entra na URL quando preenchido: parâmetro vazio viraria
+    // zero no servidor e o zero já significa "sem filtro" — mandar à toa só
+    // deixaria a URL ilegível.
+    const paraUrl = { preco: "preco_max", preco_min: "preco_min", area_min: "area_min" };
+    q.set("codigo", el("codigo").value.trim());
+    for (const [id, chave] of Object.entries(paraUrl)) {
+      const v = el(id).value.replace(/\D/g, "");
+      if (v) q.set(chave, v);
+    }
+    for (const id of CAMPOS_LISTA) {
+      const v = el(id).value;
+      if (v) q.set(id, v);
+    }
+    if (el("profissionais").checked) q.set("profissionais", "1");
+    return { cidade, bairro, q };
+  }
+
+  el("limpar").addEventListener("click", () => {
+    for (const id of CAMPOS_TEXTO) if (id !== "cidade" && id !== "codigo") el(id).value = "";
+    for (const id of ["tipo", "quartos", "vagas"]) el(id).value = "";
+    el("cidade").focus();
+  });
+
+  /**
+   * Onde a busca roda. No Netlify, a função /api/buscar. No GitHub Pages
+   * (config.js define window.JAZZ_SUPABASE), a busca roda aqui no navegador
+   * e só a chamada à Gecko passa pelo banco da Jazz, que guarda a chave.
+   */
+  async function consultar(q) {
+    const cfg = window.JAZZ_SUPABASE;
+    if (!cfg) {
+      const r = await fetch("/api/buscar?" + q.toString());
+      return { ok: r.ok, dados: await r.json() };
+    }
+    const rpc = async (fn, args) => {
+      const r = await fetch(cfg.url + "/rest/v1/rpc/" + fn, {
+        method: "POST",
+        headers: { apikey: cfg.chave, Authorization: "Bearer " + cfg.chave, "Content-Type": "application/json" },
+        body: JSON.stringify(args),
+      });
+      const j = await r.json().catch(() => null);
+      if (!r.ok) throw new Error((j && j.message) || "Busca indisponível agora.");
+      return j;
+    };
+    const codigo = q.get("codigo") || "";
+    if (!(await rpc("oportunidades_codigo_ok", { codigo }))) {
+      return { ok: false, dados: { erro: "Código de acesso inválido. Peça o código à Jazz." } };
+    }
+    // O núcleo lê process.env ao carregar; o código já foi conferido no banco.
+    window.process = window.process || { env: {} };
+    window.process.env.JAZZ_CODIGO_ACESSO = codigo;
+    const nucleo = await import("./buscar-core.mjs");
+    nucleo.definirTransporte(async (corpo, alvo) => {
+      const pedido = await rpc("oportunidades_pedir", { codigo, alvo, corpo });
+      const fim = Date.now() + 28000;
+      while (Date.now() < fim) {
+        await new Promise((ok) => setTimeout(ok, 700));
+        const r = await rpc("oportunidades_resposta", { pedido });
+        if (r && r.pronto) return r.status === 200 ? r.corpo : null;
+      }
+      return null;
+    });
+    const inicio = Date.now();
+    const entrada = { ...nucleo.lerParametros(q), chave: "via-banco", ip: "navegador" };
+    const { status, corpo } = await nucleo.buscarOpcoes(entrada);
+    // Registro da busca no banco: o que foi pedido e o que voltou, sem nome
+    // nem telefone de ninguém. Não espera e não atrapalha se falhar.
+    const opcoes = corpo.opcoes || [];
+    rpc("oportunidades_registrar", { codigo, dados: {
+      cidade: entrada.cidade, uf: entrada.uf, bairro: entrada.bairro, finalidade: entrada.finalidade, tipo: entrada.tipo,
+      filtros: { preco_min: entrada.precoMin, preco_max: entrada.precoMax, quartos: entrada.quartosMin, area_min: entrada.areaMin, vagas: entrada.vagasMin },
+      pagina: entrada.pagina, profissionais: entrada.profissionais,
+      opcoes: opcoes.length, com_telefone: corpo.com_telefone ?? 0,
+      proprietarios: opcoes.filter((o) => o.quem === "Proprietário").length,
+      profissionais_ocultos: corpo.profissionais_ocultos ?? 0, abaixo_mercado: corpo.com_oportunidade ?? 0,
+      fontes: corpo.fontes || [], motivo: corpo.motivo || null, duracao_ms: Date.now() - inicio,
+      erro: status >= 400 ? (corpo.erro || String(status)) : null,
+    } }).catch(() => {});
+    return { ok: status < 400, dados: corpo };
+  }
+
+  async function buscar() {
+    const { cidade, bairro, q } = montaConsulta();
+    if (!el("codigo").value.trim()) { mostraEstado("Informe o código de acesso.", true); el("codigo").focus(); return; }
+    if (cidade.length < 2) { mostraEstado("Informe a cidade.", true); el("cidade").focus(); return; }
+
+    guardaNaUrl(q);
+    botao.disabled = true;
+    botao.textContent = "Buscando...";
+    mostraEstado("Procurando anúncios de proprietários nos portais...");
+
+    // O esqueleto entra no lugar da lista antiga: a página mostra que está
+    // trabalhando sem esconder a região de resultados e pular o layout.
+    lista.replaceChildren(...Array.from({ length: 6 }, esqueleto));
+    contagem.textContent = "Buscando...";
+    aviso.textContent = "";
+    fontes.textContent = "";
+    convite.classList.add("oculto");
+    secao.classList.remove("oculto");
+
+    // A assinatura ignora os filtros: eles peneiram o mesmo conjunto de
+    // anúncios, então mexer só no preço não deve reiniciar o rodízio.
+    q.set("pagina", proximaPagina([cidade, bairro, el("finalidade").value].join("|").toLowerCase()));
+
+    try {
+      const { ok, dados } = await consultar(q);
+      if (!ok) throw new Error(dados.erro || "Não foi possível buscar agora.");
+
+      mostraEstado("");
+      try { localStorage.setItem(GUARDA_CODIGO, el("codigo").value.trim()); } catch { /* sem armazenamento */ }
+      // Template do WhatsApp vem do servidor (env JAZZ_WPP_TEMPLATE); os cards
+      // leem daqui.
+      window.__wppTemplate = dados.wpp_template || "";
+      lista.replaceChildren();
+      for (const o of dados.opcoes) lista.append(cartao(o));
+
+      const n = dados.opcoes.length;
+      // Quantos dá para chamar no WhatsApp é a informação que decide se a
+      // busca valeu; deixá-la só no JSON escondia o que a página tem de melhor.
+      const comZap = dados.com_telefone ?? 0;
+      // Duas contas diferentes, e as duas importam: quantos dá para chamar
+      // agora, e quantos são do próprio dono do imóvel — com ou sem número na
+      // tela. A segunda é a que responde se a busca cumpriu a metade
+      // reservada para pessoa física.
+      const fisicas = dados.com_pessoa_fisica ?? dados.com_proprietario ?? 0;
+      const partes = [];
+      if (comZap > 0) partes.push(`${comZap} com telefone`);
+      // ZERO TAMBÉM SE ESCREVE.
+      //
+      // Omitir a parcela quando ela é zero faz "não veio nenhum dono" parecer
+      // "isto não foi medido" — e essa é a única pergunta que o visitante
+      // desta página realmente tem. A metade reservada para pessoa física é a
+      // promessa do produto; quando ela não é cumprida, a página tem de
+      // dizer, não calar.
+      //
+      // Só não vale com a lista VAZIA: "Nenhuma opção encontrada · 0 de pessoa
+      // física" repete a mesma notícia duas vezes e não informa nada. O zero
+      // que interessa é o de uma página CHEIA sem nenhum dono — esse é o que
+      // revela a promessa não cumprida.
+      if (n > 0) partes.push(`${fisicas} de pessoa física`);
+      // Carteira à parte: quantos dos exibidos são o mesmo telefone repetido em
+      // muitos anúncios. Só aparece quando existe — é aviso de qualidade, não
+      // uma coluna fixa. Ajuda o captador a ver que a página não é só operação
+      // reanunciando o mesmo número.
+      const carteiras = dados.com_carteira ?? 0;
+      if (n > 0 && carteiras > 0) partes.push(`${carteiras} de carteira`);
+      // Abaixo do mercado: atalho para o dono apressado. Só quando existe.
+      const oport = dados.com_oportunidade ?? 0;
+      if (n > 0 && oport > 0) partes.push(`${oport} abaixo do mercado`);
+      const sufixo = partes.length ? ` · ${partes.join(", ")}` : "";
+      contagem.textContent = (n === 0 ? "Nenhuma opção encontrada"
+        : n === 1 ? "1 opção encontrada" : n + " opções encontradas") + sufixo;
+      aviso.textContent = dados.motivo ? (AVISOS[dados.motivo] || "Busca indisponível agora.") : "";
+      fontes.innerHTML = resumoFontes(dados.fontes);
+      if (n === 0 && !dados.motivo) {
+        aviso.textContent = "Tente sem bairro, sem teto de preço, ou em uma cidade vizinha.";
+      }
+      // Só proprietário é o padrão. O que ficou de fora é dito, não escondido.
+      const ocultos = dados.profissionais_ocultos ?? 0;
+      if (ocultos > 0) {
+        const nota = document.createElement("span");
+        nota.textContent = (aviso.textContent ? " " : "") +
+          `Mostramos só proprietários: ${ocultos} anúncio${ocultos === 1 ? "" : "s"} de imobiliária ou corretor ficaram de fora. `;
+        const ver = document.createElement("a");
+        ver.href = "#";
+        ver.textContent = "Mostrar também";
+        ver.addEventListener("click", (e) => { e.preventDefault(); el("profissionais").checked = true; buscar(); });
+        aviso.append(nota, ver);
+      }
+
+      // O convite só existe quando há um número configurado; sem ele a página
+      // mostraria um botão que não leva a lugar nenhum.
+      if (dados.jazz_whatsapp) {
+        conviteLink.href = "https://wa.me/55" + dados.jazz_whatsapp +
+          "?text=" + encodeURIComponent("Olá! Quero anunciar meu imóvel com a Jazz Conecta.");
+        convite.classList.remove("oculto");
+      }
+    } catch (err) {
+      lista.replaceChildren();
+      contagem.textContent = "";
+      fontes.textContent = "";
+      mostraEstado(err.message || "Não foi possível buscar agora.", true);
+    } finally {
+      botao.disabled = false;
+      botao.textContent = "Buscar 10 opções";
+    }
+  }
+
+  form.addEventListener("submit", (e) => { e.preventDefault(); buscar(); });
+
+  // Link compartilhado já chega buscando: quem recebe vê o resultado, não um
+  // formulário para preencher de novo.
+  // Guarda o código no navegador para não pedir de novo a cada visita. É
+  // conveniência de quem já entrou, não segurança: quem valida é o servidor.
+  try {
+    const salvo = localStorage.getItem(GUARDA_CODIGO);
+    if (salvo) el("codigo").value = salvo;
+  } catch { /* navegador sem armazenamento: só digita de novo */ }
+
+  if (leDaUrl() && el("codigo").value.trim()) buscar();
+</script>
+</body>
+</html>
